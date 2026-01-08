@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Pay for Service{% endblock %}
+
+{% block content %}
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="col-md-6 col-lg-5">
+
+    <div class="card shadow-lg border-0 rounded-4 p-4">
+      <h3 class="text-center fw-bold mb-3 text-primary">
+        Pay for Service #{{ service.id }}
+      </h3>
+
+      <p class="text-center mb-3">
+        Amount: <strong>₹ {{ amount }}</strong>
+      </p>
+
+      <div class="text-center">
+        <button id="rzp-button" class="btn btn-success btn-lg w-100">
+          Pay Now
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Razorpay Checkout Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+var options = {
+    "key": "{{ key_id }}",                // Razorpay Key
+    "amount": "{{ service.price|floatformat:0 }}00",  // Amount in paise
+    "currency": "INR",
+    "name": "EV Care",
+    "description": "Service Payment",
+    "order_id": "{{ order_id }}",
+    "prefill": {                          // ✅ Prefill user info
+        "contact": "{{ user_phone }}",
+        "email": "{{ request.user.email }}"
+    },
+    "handler": function (response) {
+        // Create a form to POST the payment response
+        var form = document.createElement("form");
+        form.method = "POST";
+        form.action = "";
+
+        form.innerHTML = `
+            {% csrf_token %}
+            <input type="hidden" name="razorpay_payment_id" value="${response.razorpay_payment_id}">
+            <input type="hidden" name="razorpay_signature" value="${response.razorpay_signature}">
+        `;
+
+        document.body.appendChild(form);
+        form.submit();
+    },
+    "theme": {
+        "color": "#0d6efd"
+    }
+};
+
+var rzp = new Razorpay(options);
+
+document.getElementById("rzp-button").onclick = function(e){
+    rzp.open();
+    e.preventDefault();
+};
+</script>
+
+{% endblock %}

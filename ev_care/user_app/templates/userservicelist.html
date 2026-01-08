@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Service Centres{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+    <h2 class="mb-4 text-center fw-bold">
+        Available Service Centres
+    </h2>
+
+    {% if vehicle %}
+        <div class="row g-4">
+            {% for service in vehicle %}
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <div class="card shadow-sm h-100 border-0 rounded-4">
+
+                        {% if service.image %}
+                            <img src="{{ service.image.url }}"
+                                 class="card-img-top rounded-top-4"
+                                 alt="Service Image"
+                                 style="height:220px; object-fit:cover;">
+                        {% else %}
+                            <img src="https://via.placeholder.com/400x250"
+                                 class="card-img-top rounded-top-4"
+                                 alt="No Image"
+                                 style="height:220px; object-fit:cover;">
+                        {% endif %}
+
+                        <div class="card-body">
+                            <h5 class="card-title fw-semibold">
+                                {{ service.name }}
+                            </h5>
+
+                            <p class="card-text mb-1">
+                                <strong>📞 Phone:</strong> {{ service.phone }}
+                            </p>
+
+                            <p class="card-text mb-1">
+                                <strong>📍 Address:</strong>
+                                {{ service.address }}
+                            </p>
+
+                            <p class="card-text mb-0">
+                                <strong>⏰ Hours:</strong>
+                                {{ service.working_hours }}
+                            </p>
+                        </div>
+
+                        <div class="card-footer bg-white border-0 text-center pb-4">
+                            <a href="{% url 'userserviceCreate' service.id %}"
+                               class="btn btn-primary btn-sm rounded-pill px-3 mb-2">
+                                Service & Booking
+                            </a>
+
+                            <a href="{% url 'userproductlist' service.id %}"
+                               class="btn btn-outline-primary btn-sm rounded-pill px-3 mb-2">
+                                Buy Products
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center mt-4">
+            No service centres available.
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

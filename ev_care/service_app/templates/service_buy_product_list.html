@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Service Orders{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+    <h3 class="fw-bold mb-4 text-center">Orders for Service Center</h3>
+
+    {% if buyproduct %}
+    <div class="table-responsive">
+        <table class="table table-bordered shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>User</th>
+                    <th>Quantity</th>
+                    <th>Total Amount</th>
+                    <th>Payment</th>
+                    <th>Order Status</th>
+                    <th>Action</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in buyproduct %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ order.product.name }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>₹ {{ order.total_amount }}</td>
+
+                    <td>
+                        {% if order.payment_status == 'paid' %}
+                        <span class="badge bg-success">Paid</span>
+                        {% elif order.payment_status == 'failed' %}
+                        <span class="badge bg-danger">Failed</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if order.order_status == 'pending' %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                        {% else %}
+                        <span class="badge bg-success">Received</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if order.order_status == 'pending' %}
+                        <a href="{% url 'send_order_otp' order.id %}" class="btn btn-sm btn-primary">
+                            Mark Received
+                        </a>
+
+                        {% else %}
+                        <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ order.created_at|date:"d M Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center text-muted">No orders assigned yet.</p>
+    {% endif %}
+
+</div>
+{% endblock %}

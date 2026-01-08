@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In{% endblock %}
+
+{% block content %}
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center px-2 px-md-4">
+
+    <div class="row w-100 shadow-lg rounded-4 overflow-hidden bg-white" style="max-width: 950px;">
+
+        <!-- LEFT INFO SECTION -->
+        <div class="col-lg-6 d-none d-lg-flex bg-primary text-white p-5
+                    flex-column justify-content-center">
+            <h2 class="fw-bold mb-3">Welcome Back ⚡</h2>
+            <p class="lead mb-4">
+                Sign in to manage your vehicles, services, and payments easily.
+            </p>
+
+            <ul class="list-unstyled">
+                <li class="mb-2">✔ Track service requests</li>
+                <li class="mb-2">✔ Book EV services</li>
+                <li class="mb-2">✔ Secure & fast access</li>
+            </ul>
+        </div>
+
+        <!-- RIGHT FORM SECTION -->
+        <div class="col-lg-6 col-12 p-4 p-sm-5">
+            <h3 class="text-center fw-bold mb-4">Sign In</h3>
+
+            <form method="post" novalidate class="w-100">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Username</label>
+                    <input type="text" name="username" class="form-control form-control-lg" placeholder="Enter username"
+                        required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Password</label>
+                    <input type="password" name="password" class="form-control form-control-lg"
+                        placeholder="Enter password" required>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+
+            <p class="text-center mt-4 text-muted small">
+                Don’t have an account?
+                <a href="{% url 'signup' %}" class="fw-semibold text-decoration-none">
+                    Sign up
+                </a>
+            </p>
+            <p class="text-center mt-4 text-muted small">
+                Forgot your password?
+                <a href="{% url 'forgot-password' %}" class="fw-semibold text-primary text-decoration-none">
+                    Reset here
+                </a>
+            </p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

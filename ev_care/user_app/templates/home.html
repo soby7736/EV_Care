@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Home | EV Care{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="bg-dark text-light rounded-4 p-4 p-md-5 mb-5 shadow">
+    <div class="row align-items-center gy-4">
+        <div class="col-12 col-md-7 text-center text-md-start">
+            <h1 class="fw-bold display-6 display-md-5">
+                Powering Your Electric Vehicle Experience ⚡
+            </h1>
+
+            <p class="lead mt-3">
+                Manage vehicles, book EV services, buy products,
+                and access charging stations — all in one platform.
+            </p>
+
+            {% if not user.is_authenticated %}
+            <div class="d-flex flex-column flex-sm-row gap-3 mt-4 justify-content-center justify-content-md-start">
+                <a href="{% url 'signup' %}" class="btn btn-success btn-lg px-4">
+                    Get Started
+                </a>
+                <a href="{% url 'signin' %}" class="btn btn-outline-light btn-lg px-4">
+                    Sign In
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-12 col-md-5 text-center">
+            <img src="https://cdn-icons-png.flaticon.com/512/744/744465.png"
+                 class="img-fluid w-75 w-md-100" alt="EV Illustration">
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="mb-5">
+    <div class="row g-4">
+
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card border-0 shadow h-100 text-center p-3">
+                <div class="fs-1">🚗</div>
+                <h5 class="fw-bold mt-3">Manage Vehicles</h5>
+                <p class="text-muted small">
+                    Add, update, and manage your EVs effortlessly.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card border-0 shadow h-100 text-center p-3">
+                <div class="fs-1">🛠</div>
+                <h5 class="fw-bold mt-3">Book Services</h5>
+                <p class="text-muted small">
+                    Request EV services from trusted centers.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card border-0 shadow h-100 text-center p-3">
+                <div class="fs-1">🔌</div>
+                <h5 class="fw-bold mt-3">Charging & Products</h5>
+                <p class="text-muted small">
+                    Buy EV products and book charging stations easily.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- QUICK ACTIONS -->
+{% if user.is_authenticated %}
+<section class="mb-4">
+    <h3 class="fw-bold mb-4 text-center">Quick Actions</h3>
+
+    <div class="row g-4">
+
+        <div class="col-12 col-sm-6 col-lg-4">
+            <a href="{% url 'addv' %}" class="text-decoration-none">
+                <div class="card shadow-sm border-0 h-100 text-center py-4">
+                    <div class="fs-1 text-success">➕</div>
+                    <h6 class="fw-bold mt-2">Add Vehicle</h6>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-4">
+            <a href="{% url 'userservicelist' %}" class="text-decoration-none">
+                <div class="card shadow-sm border-0 h-100 text-center py-4">
+                    <div class="fs-1 text-warning">🏢</div>
+                    <h6 class="fw-bold mt-2">Service Centers</h6>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-4">
+            <a href="{% url 'servicerequest' %}" class="text-decoration-none">
+                <div class="card shadow-sm border-0 h-100 text-center py-4">
+                    <div class="fs-1 text-info">📋</div>
+                    <h6 class="fw-bold mt-2">My Services</h6>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

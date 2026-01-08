@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Verify OTP{% endblock %}
+
+{% block content %}
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="row w-100 justify-content-center">
+    <div class="col-11 col-sm-8 col-md-6 col-lg-4">
+
+      <div class="card shadow-lg border-0 rounded-4 p-4">
+        <h4 class="text-center fw-bold mb-4 text-success">
+          OTP Verification
+        </h4>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label">Enter OTP</label>
+            <input
+              type="text"
+              name="otp"
+              class="form-control rounded-3 text-center"
+              placeholder="4-digit OTP"
+              maxlength="4"
+              required
+            >
+          </div>
+
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-success rounded-3">
+              Verify OTP
+            </button>
+          </div>
+        </form>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

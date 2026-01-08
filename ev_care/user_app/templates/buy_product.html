@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Buy Product{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow col-md-6 mx-auto p-4">
+
+        <h4 class="fw-bold mb-2">{{ product.name }}</h4>
+        <p class="text-muted">{{ product.description }}</p>
+
+        <h5 class="text-success mb-3">Price: ₹ {{ product.price }}</h5>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" class="btn btn-warning w-100">
+                Confirm Purchase
+            </button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

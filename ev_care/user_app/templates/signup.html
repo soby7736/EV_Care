@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Service Request{% endblock %}
+
+{% block content %}
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center px-2 px-md-4">
+
+    <div class="row w-100 shadow-lg rounded-4 overflow-hidden bg-white"
+         style="max-width: 1100px;">
+
+        <!-- LEFT MESSAGE SECTION -->
+        <div class="col-lg-6 d-none d-lg-flex bg-dark text-white p-5
+                    flex-column justify-content-center">
+            <h2 class="fw-bold mb-3">Request EV Service ⚡</h2>
+
+            <p class="lead">
+                Book trusted EV service centers and track your service status in real time.
+            </p>
+
+            <ul class="mt-4 ps-3">
+                <li class="mb-2">✔ Certified EV technicians</li>
+                <li class="mb-2">✔ Transparent pricing</li>
+                <li class="mb-2">✔ Fast & reliable service</li>
+            </ul>
+        </div>
+
+        <!-- RIGHT FORM SECTION -->
+        <div class="col-lg-6 col-12 p-4 p-sm-5">
+            <h3 class="mb-4 text-center fw-bold">
+                Service Request Form
+            </h3>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+                            <div class="form-text">
+                                {{ field.help_text }}
+                            </div>
+                        {% endif %}
+
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ field.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="d-grid mt-4">
+                    <button type="submit"
+                            class="btn btn-primary btn-lg rounded-pill">
+                        Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<style>
+/* Bootstrap-like styling for Django form fields */
+form input,
+form select,
+form textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #ced4da;
+    font-size: 0.95rem;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %}Service Requests{% endblock %}
+
+{% block content %}
+<h2 class="fw-bold mb-4 text-center">
+    Service Requests (Service Center)
+</h2>
+
+{% if servicerq %}
+
+<!-- TABLE VIEW (Desktop) -->
+<div class="table-responsive d-none d-md-block">
+    <table class="table table-bordered align-middle shadow-sm bg-white">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Phone</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for service in servicerq %}
+            <tr>
+                <form method="post"
+                      action="{% url 'servicecenter_inline_update' service.id %}">
+                    {% csrf_token %}
+
+                    <td>{{ service.id }}</td>
+                    <td>{{ service.user }}</td>
+                    <td>{{ service.user.phone }}</td>
+                    <td>{{ service.get_category_display }}</td>
+
+                    <td>
+                        {% if service.status != "completed" %}
+                        <select name="status" class="form-select form-select-sm">
+                            <option value="pending" {% if service.status == "pending" %}selected{% endif %}>Pending</option>
+                            <option value="assigned" {% if service.status == "assigned" %}selected{% endif %}>Assigned</option>
+                            <option value="completed" {% if service.status == "completed" %}selected{% endif %}>Completed</option>
+                        </select>
+                        {% else %}
+                            <span class="badge bg-success">Completed</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ service.description }}</td>
+
+                    <td>
+                        {% if service.status != "completed" %}
+                        <input type="number" step="0.01" name="price"
+                               class="form-control form-control-sm"
+                               value="{{ service.price|default_if_none:'' }}">
+                        {% else %}
+                            ₹ {{ service.price }}
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if service.status != "completed" %}
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            Save
+                        </button>
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                </form>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- CARD VIEW (Mobile) -->
+<div class="d-md-none">
+    <div class="row g-3">
+        {% for service in servicerq %}
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <form method="post"
+                          action="{% url 'servicecenter_inline_update' service.id %}">
+                        {% csrf_token %}
+
+                        <h6 class="fw-bold mb-2">
+                            Request #{{ service.id }} — {{ service.get_category_display }}
+                        </h6>
+
+                        <p class="mb-1"><strong>User:</strong> {{ service.user }}</p>
+                        <p class="mb-1"><strong>Phone:</strong> {{ service.phone }}</p>
+                        <p class="mb-1"><strong>Description:</strong> {{ service.description }}</p>
+
+                        <div class="mb-2">
+                            <strong>Status:</strong>
+                            {% if service.status != "completed" %}
+                            <select name="status" class="form-select form-select-sm mt-1">
+                                <option value="pending" {% if service.status == "pending" %}selected{% endif %}>Pending</option>
+                                <option value="assigned" {% if service.status == "assigned" %}selected{% endif %}>Assigned</option>
+                                <option value="completed" {% if service.status == "completed" %}selected{% endif %}>Completed</option>
+                            </select>
+                            {% else %}
+                                <span class="badge bg-success ms-1">Completed</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Price:</strong>
+                            {% if service.status != "completed" %}
+                            <input type="number" step="0.01" name="price"
+                                   class="form-control form-control-sm mt-1"
+                                   value="{{ service.price|default_if_none:'' }}">
+                            {% else %}
+                                ₹ {{ service.price }}
+                            {% endif %}
+                        </div>
+
+                        {% if service.status != "completed" %}
+                        <button type="submit" class="btn btn-primary btn-sm w-100">
+                            Save Changes
+                        </button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-info text-center">
+    No service requests found.
+</div>
+{% endif %}
+
+{% endblock %}

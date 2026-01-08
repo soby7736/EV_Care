@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Vehicle{% endblock %}
+
+{% block content %}
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center px-3">
+
+    <div class="row w-100 shadow-lg rounded-4 overflow-hidden bg-white"
+         style="max-width: 900px;">
+
+        <!-- LEFT WARNING SECTION -->
+        <div class="col-lg-6 d-none d-lg-flex bg-danger text-white p-5
+                    flex-column justify-content-center">
+            <h2 class="fw-bold mb-3">Delete Vehicle 🚨</h2>
+
+            <p class="lead">
+                This action is permanent and cannot be undone.
+            </p>
+
+            <ul class="mt-4 ps-3">
+                <li class="mb-2">❌ Vehicle data will be removed</li>
+                <li class="mb-2">❌ Service history may be lost</li>
+                <li class="mb-2">❌ This cannot be recovered</li>
+            </ul>
+        </div>
+
+        <!-- RIGHT CONFIRM SECTION -->
+        <div class="col-lg-6 col-12 p-4 p-sm-5 text-center">
+            <h3 class="fw-bold mb-3 text-danger">
+                Are you sure?
+            </h3>
+
+            <p class="mb-4">
+                You are about to delete:
+            </p>
+
+            <div class="alert alert-warning fw-semibold">
+                {{ object.brand }} — {{ object.model }}
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+                    <button type="submit"
+                            class="btn btn-danger btn-lg rounded-pill px-4">
+                        Yes, Delete
+                    </button>
+
+                    <a href="{% url 'listv' object.user.id %}"
+                       class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

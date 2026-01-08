@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Products{% endblock %}
+
+{% block content %}
+
+<div class="container my-4">
+
+    <h2 class="fw-bold text-center mb-4">Available Products</h2>
+
+    <!-- TABLE VIEW (Desktop) -->
+    <div class="table-responsive d-none d-md-block">
+        <table class="table table-bordered align-middle shadow-sm bg-white">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+
+                    <td>
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" width="60" height="60" class="rounded">
+                        {% else %}
+                        No Image
+                        {% endif %}
+                    </td>
+
+                    <td class="fw-semibold">{{ product.name }}</td>
+                    <td>{{ product.description|truncatechars:50 }}</td>
+                    <td>₹ {{ product.price }}</td>
+
+                    <!-- ✅ FIXED BUY BUTTON -->
+                    <td>
+                        <a href="{% url 'buy_product' product.id %}"
+                           class="btn btn-warning btn-sm rounded-pill">
+                            Buy
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">
+                        No products available
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD VIEW (Mobile) -->
+    <div class="row g-3 d-md-none">
+        {% for product in products %}
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center mb-3">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}"
+                             width="70" height="70"
+                             class="rounded me-3">
+                        {% endif %}
+
+                        <div>
+                            <h6 class="fw-bold mb-1">{{ product.name }}</h6>
+                            <p class="text-muted small mb-0">
+                                ₹ {{ product.price }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <p class="small text-muted">
+                        {{ product.description|truncatechars:80 }}
+                    </p>
+
+                    <div class="text-end">
+                        <a href="{% url 'buy_product' product.id %}"
+                           class="btn btn-warning btn-sm rounded-pill">
+                            Buy
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center text-muted">
+            No products available
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

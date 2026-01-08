@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Edit Vehicle{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center min-vh-75">
+
+        <!-- LEFT INFO SECTION -->
+        <div class="col-lg-5 d-none d-lg-block">
+            <div class="p-4 rounded-4 bg-light shadow-sm h-100">
+                <h3 class="fw-bold mb-3">Update Your Vehicle</h3>
+                <p class="text-muted">
+                    Keep your vehicle details up to date to ensure
+                    smooth service booking, accurate maintenance records,
+                    and better EV care experience.
+                </p>
+                <ul class="text-muted small ps-3">
+                    <li>Edit model & number</li>
+                    <li>Manage service history easily</li>
+                    <li>Better support from service centres</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- FORM SECTION -->
+        <div class="col-12 col-lg-5">
+            <div class="card border-0 shadow rounded-4">
+                <div class="card-body p-4 p-md-5">
+
+                    <h4 class="fw-bold text-center mb-4">
+                        Edit Vehicle
+                    </h4>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        {{ form.as_p }}
+
+                        <div class="d-grid mt-4">
+                            <button type="submit"
+                                    class="btn btn-primary btn-lg rounded-pill">
+                                Update Vehicle
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

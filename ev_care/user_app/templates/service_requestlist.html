@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}My Service Requests{% endblock %}
+
+{% block content %}
+<h2 class="fw-bold mb-4 text-center">My Service Requests</h2>
+
+{% if service %}
+
+<!-- ================= DESKTOP TABLE ================= -->
+<div class="table-responsive d-none d-md-block">
+    <table class="table table-bordered align-middle shadow-sm bg-white">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Service Centre</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Payment</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for s in service %}
+            <tr>
+                <td>{{ s.id }}</td>
+                <td>{{ s.get_category_display }}</td>
+                <td>
+                    {% if s.status == "completed" %}
+                        <span class="badge bg-success">{{ s.status|capfirst }}</span>
+                    {% elif s.status == "assigned" %}
+                        <span class="badge bg-warning text-dark">{{ s.status|capfirst }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ s.status|capfirst }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ s.service_centre.name }}</td>
+                <td>{{ s.description }}</td>
+                <td>₹ {{ s.price|default:"-" }}</td>
+                <td>
+                    {% if s.status == "completed" %}
+                        {% if s.payment == "pending" %}
+                            <span class="badge bg-danger">Pending</span>
+                        {% else %}
+                            <span class="badge bg-success">completed</span>
+                        {% endif %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if s.status == "pending" %}
+                        <a href="{% url 'serviceupdate' s.id %}" class="btn btn-sm btn-primary mb-1">
+                            Update
+                        </a>
+                        <a href="{% url 'servicedelete' s.id %}" class="btn btn-sm btn-danger mb-1">
+                            Delete
+                        </a>
+
+                    {% elif s.status == "assigned" %}
+                        <span class="text-muted">Locked</span>
+
+                    {% elif s.status == "completed" %}
+                        {% if s.payment == "pending" and s.price %}
+                            <a href="{% url 'service_payment' s.id %}" class="btn btn-sm btn-warning">
+                                Pay
+                            </a>
+                        {% else %}
+                            <span class="text-success">Paid ✅</span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- ================= MOBILE CARD VIEW ================= -->
+<div class="d-md-none">
+    <div class="row g-3">
+        {% for s in service %}
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">
+                        Request #{{ s.id }} — {{ s.get_category_display }}
+                    </h6>
+
+                    <p class="mb-1">
+                        <strong>Status:</strong>
+                        {% if s.status == "completed" %}
+                            <span class="badge bg-success">{{ s.status|capfirst }}</span>
+                        {% elif s.status == "assigned" %}
+                            <span class="badge bg-warning text-dark">{{ s.status|capfirst }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ s.status|capfirst }}</span>
+                        {% endif %}
+                    </p>
+
+                    <p class="mb-1">
+                        <strong>Service Centre:</strong> {{ s.service_centre.name }}
+                    </p>
+
+                    <p class="mb-1">
+                        <strong>Description:</strong> {{ s.description }}
+                    </p>
+
+                    <p class="mb-1">
+                        <strong>Price:</strong> ₹ {{ s.price|default:"-" }}
+                    </p>
+
+                    <p class="mb-1">
+                        <strong>Payment:</strong>
+                        {% if s.status == "completed" %}
+                            {% if s.payment == "pending" %}
+                                <span class="badge bg-danger">Pending</span>
+                            {% else %}
+                                <span class="badge bg-success">Paid ✅</span>
+                            {% endif %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        {% if s.status == "pending" %}
+                            <a href="{% url 'serviceupdate' s.id %}"
+                               class="btn btn-sm btn-primary w-100">
+                                Update
+                            </a>
+                            <a href="{% url 'servicedelete' s.id %}"
+                               class="btn btn-sm btn-danger w-100">
+                                Delete
+                            </a>
+
+                        {% elif s.status == "assigned" %}
+                            <span class="text-muted w-100">Locked</span>
+
+                        {% elif s.status == "completed" %}
+                            {% if s.payment == "pending" and s.price %}
+                                <a href="{% url 'service_payment' s.id %}"
+                                   class="btn btn-sm btn-warning w-100">
+                                    Pay
+                                </a>
+                            {% else %}
+                                <span class="text-success w-100">Paid ✅</span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-info text-center">
+    No service requests found.
+</div>
+{% endif %}
+
+{% endblock %}

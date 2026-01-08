@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Razorpay Checkout</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+
+<script>
+var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount }}",
+    "currency": "INR",
+    "name": "EV Care",
+    "description": "Product Purchase",
+    "order_id": "{{ order.razorpay_order_id }}",
+    "handler": function (response){
+        window.location.href = "{% url 'razorpay_verify' order.id %}"
+            + "?razorpay_payment_id=" + response.razorpay_payment_id
+            + "&razorpay_signature=" + response.razorpay_signature;
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.open();
+</script>
+
+</body>
+</html>
