@@ -1,74 +1,133 @@
-{% extends 'base.html' %}
-{% block title %}Service Orders{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Service Orders</title>
 
-{% block content %}
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .page-title {
+            font-weight: 700;
+        }
+
+        .card {
+            border-radius: 14px;
+        }
+
+        .table thead th {
+            white-space: nowrap;
+        }
+
+        .status-pill {
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
 <div class="container my-5">
 
-    <h3 class="fw-bold mb-4 text-center">Orders for Service Center</h3>
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h3 class="page-title">Service Center Orders</h3>
+        <p class="text-muted">Manage and confirm received products</p>
+    </div>
 
     {% if buyproduct %}
-    <div class="table-responsive">
-        <table class="table table-bordered shadow-sm">
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Product</th>
-                    <th>User</th>
-                    <th>Quantity</th>
-                    <th>Total Amount</th>
-                    <th>Payment</th>
-                    <th>Order Status</th>
-                    <th>Action</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in buyproduct %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ order.product.name }}</td>
-                    <td>{{ order.user.username }}</td>
-                    <td>{{ order.quantity }}</td>
-                    <td>₹ {{ order.total_amount }}</td>
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark sticky-top">
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>User</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
 
-                    <td>
-                        {% if order.payment_status == 'paid' %}
-                        <span class="badge bg-success">Paid</span>
-                        {% elif order.payment_status == 'failed' %}
-                        <span class="badge bg-danger">Failed</span>
-                        {% else %}
-                        <span class="badge bg-warning text-dark">Pending</span>
-                        {% endif %}
-                    </td>
+                <tbody>
+                    {% for order in buyproduct %}
+                    <tr>
+                        <td class="fw-semibold">{{ forloop.counter }}</td>
 
-                    <td>
-                        {% if order.order_status == 'pending' %}
-                        <span class="badge bg-warning text-dark">Pending</span>
-                        {% else %}
-                        <span class="badge bg-success">Received</span>
-                        {% endif %}
-                    </td>
+                        <td>{{ order.product.name }}</td>
 
-                    <td>
-                        {% if order.order_status == 'pending' %}
-                        <a href="{% url 'send_order_otp' order.id %}" class="btn btn-sm btn-primary">
-                            Mark Received
-                        </a>
+                        <td>{{ order.user.username }}</td>
 
-                        {% else %}
-                        <span class="text-muted">—</span>
-                        {% endif %}
-                    </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ order.quantity }}</span>
+                        </td>
 
-                    <td>{{ order.created_at|date:"d M Y" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        <td class="fw-semibold text-success">
+                            ₹ {{ order.total_amount }}
+                        </td>
+
+                        <!-- PAYMENT STATUS -->
+                        <td>
+                            {% if order.payment_status == 'paid' %}
+                                <span class="badge rounded-pill bg-success">Paid</span>
+                            {% elif order.payment_status == 'failed' %}
+                                <span class="badge rounded-pill bg-danger">Failed</span>
+                            {% else %}
+                                <span class="badge rounded-pill bg-warning text-dark">Pending</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- ORDER STATUS -->
+                        <td>
+                            {% if order.order_status == 'pending' %}
+                                <span class="badge rounded-pill bg-warning text-dark">Pending</span>
+                            {% else %}
+                                <span class="badge rounded-pill bg-success">Received</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- ACTION -->
+                        <td>
+                            {% if order.order_status == 'pending' %}
+                                <a href="{% url 'send_order_otp' order.id %}"
+                                   class="btn btn-sm btn-outline-primary fw-semibold">
+                                    Verify OTP
+                                </a>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-muted">
+                            {{ order.created_at|date:"d M Y" }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+
     {% else %}
-    <p class="text-center text-muted">No orders assigned yet.</p>
+        <div class="text-center py-5">
+            <h6 class="text-muted">No orders assigned yet 🚫</h6>
+        </div>
     {% endif %}
 
 </div>
-{% endblock %}
+
+</body>
+</html>

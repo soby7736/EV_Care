@@ -22,5 +22,5 @@ class Products(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     price = models.DecimalField(decimal_places=2,max_digits=10,null=True,blank=True)
-    quantity = models.CharField(max_length=50,)
+    quantity = models.IntegerField()
     image = models.FileField(upload_to="product_images",null=True,blank=True)

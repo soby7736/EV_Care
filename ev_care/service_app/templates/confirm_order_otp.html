@@ -1,25 +1,91 @@
-{% extends 'base.html' %}
-{% block title %}Confirm OTP{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm OTP</title>
 
-{% block content %}
-<div class="container mt-5 col-md-5">
-    <div class="card p-4 shadow">
-        <h4 class="mb-3">Confirm Order: {{ order.product.name }}</h4>
-        <p>Enter the OTP sent to {{ order.user.email }}</p>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <form method="post">
-            {% csrf_token %}
-            <input type="text" name="otp" class="form-control mb-3" placeholder="Enter OTP" required>
-            <button type="submit" class="btn btn-primary w-100">Confirm OTP</button>
-        </form>
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-        {% if messages %}
-        <div class="mt-3">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
+        .otp-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .otp-title {
+            font-weight: 700;
+            color: #333;
+        }
+
+        .otp-input {
+            text-align: center;
+            letter-spacing: 6px;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            font-weight: 600;
+            padding: 10px;
+        }
+
+        .btn-confirm:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="otp-card text-center">
+    <h4 class="otp-title mb-2">Confirm Your Order</h4>
+    <p class="text-muted mb-4">
+        OTP sent to <br>
+        <strong>{{ order.user.email }}</strong>
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <input
+            type="text"
+            name="otp"
+            class="form-control otp-input mb-3"
+            placeholder="••••••"
+            maxlength="6"
+            required
+        >
+
+        <button type="submit" class="btn btn-confirm text-white w-100">
+            Verify OTP
+        </button>
+    </form>
+
+    {% if messages %}
+    <div class="mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mt-2">
+            {{ message }}
         </div>
-        {% endif %}
+        {% endfor %}
     </div>
+    {% endif %}
 </div>
-{% endblock %}
+
+</body>
+</html>

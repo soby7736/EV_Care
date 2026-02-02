@@ -14,7 +14,7 @@ class CustomUser(AbstractUser):
 
 #  Vechichle Registration
 class Vehicle(models.Model):
-    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
+    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
     brand = models.CharField(max_length=100,null=True,blank=True)
     model = models.CharField(max_length=100,null=True,blank=True)
     connector_type = models.CharField(max_length=100,choices=[('type1', 'Type 1'),

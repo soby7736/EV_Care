@@ -62,6 +62,8 @@ urlpatterns = [
     path('buy-product/<int:product_id>/', BuyProductView.as_view(), name='buy_product'),
     path('razorpay-checkout/<int:order_id>/', razorpay_checkout, name='razorpay_checkout'),
     path('razorpay-verify/<int:order_id>/', razorpay_verify, name='razorpay_verify'),
+    path('payment-failed/',payment_failed, name='payment_failed'),
+
     path('order-success/<int:order_id>/', order_success, name='order_success'),
     path('my-orders/', BuyedProductList.as_view(), name='my_orders'),
 

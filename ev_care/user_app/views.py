@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.http import HttpResponseForbidden
 import razorpay
 import random
+from django.db import transaction
 import time
 from django.core.mail import send_mail
 from django.conf import settings
@@ -342,7 +343,6 @@ class ServicePaymentView(LoginRequiredMixin, View):
         service.save()
 
         return redirect("home") 
-
 class BuyProductView(LoginRequiredMixin, CreateView):
     login_url = 'signin'
     model = ProductOrder
@@ -354,27 +354,42 @@ class BuyProductView(LoginRequiredMixin, CreateView):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        # Save order first
+        requested_qty = form.cleaned_data['quantity']
+
+        # Stock check BEFORE order creation
+        if requested_qty > self.product.quantity:
+            messages.error(
+                self.request,
+                f"Sorry! Only {self.product.quantity} items are available."
+            )
+            return redirect(
+                    reverse(
+                            'userproductlist',
+            kwargs={'service_centre_id': self.product.service_centre.id}
+                )
+)
+
+        # Save order
         form.instance.user = self.request.user
         form.instance.product = self.product
         form.instance.service_centre = self.product.service_centre
 
-        response = super().form_valid(form)  #  order saved here
+        response = super().form_valid(form)
 
-        # Create Razorpay Order
+        # Razorpay order creation
         client = razorpay.Client(
             auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
         )
+        client.session.timeout = 15
 
         razorpay_order = client.order.create({
-            "amount": int(self.object.total_amount * 100),  # paise
+            "amount": int(self.object.total_amount * 100),
             "currency": "INR",
             "payment_capture": 1
         })
 
-        # Save Razorpay order id
         self.object.razorpay_order_id = razorpay_order['id']
-        self.object.save()
+        self.object.save(update_fields=['razorpay_order_id'])
 
         return response
 
@@ -417,16 +432,36 @@ def razorpay_verify(request, order_id):
             'razorpay_signature': order.razorpay_signature
         })
 
-        # ✅ Trigger signal
-        order.payment_status = 'paid'
-        order.save(update_fields=['payment_status', 'razorpay_payment_id', 'razorpay_signature'])
+        with transaction.atomic():
+            product = order.product
+
+            if product.quantity < order.quantity:
+                order.payment_status = 'failed'
+                order.save(update_fields=['payment_status'])
+                return redirect('payment_failed')
+
+            #Reduce stock
+            product.quantity -= order.quantity
+            product.save(update_fields=['quantity'])
+
+            #Update order
+            order.payment_status = 'paid'
+            order.save(update_fields=[
+                'payment_status',
+                'razorpay_payment_id',
+                'razorpay_signature'
+            ])
 
         return redirect('order_success', order_id=order.id)
 
-    except:
+    except Exception as e:
         order.payment_status = 'failed'
         order.save(update_fields=['payment_status'])
         return redirect('payment_failed')
+    
+def payment_failed(request):
+    return render(request, 'payment_failed.html')
+
 
 def order_success(request, order_id):
     order = get_object_or_404(ProductOrder, id=order_id)
