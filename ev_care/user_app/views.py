@@ -1,13 +1,15 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import authenticate,login,logout
 from django.urls import reverse_lazy
-from django.views.generic import View,CreateView,UpdateView,DeleteView,ListView,TemplateView
+from django.views.generic import View,CreateView,UpdateView,DeleteView,ListView,TemplateView,DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse
 from user_app.models import *
 from user_app.forms import *
 from service_app.models import *
+from charging_center.models import *
+from charging_center.forms import *
 from django.utils import timezone
 from django.http import HttpResponseForbidden
 import razorpay
@@ -16,6 +18,7 @@ import time
 from django.core.mail import send_mail
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -275,7 +278,7 @@ class ServiceDelete(LoginRequiredMixin,DeleteView):
         return super().dispatch(request, *args, **kwargs)
 
 class ServicePaymentView(LoginRequiredMixin, View):
-    login_url = '/login/'  # redirect if not logged in
+    login_url = 'signin'
 
     def get(self, request, service_id):
         # Fetch the service
@@ -341,6 +344,7 @@ class ServicePaymentView(LoginRequiredMixin, View):
         return redirect("home") 
 
 class BuyProductView(LoginRequiredMixin, CreateView):
+    login_url = 'signin'
     model = ProductOrder
     fields = ['quantity']
     template_name = 'buy_product.html'
@@ -429,9 +433,80 @@ def order_success(request, order_id):
     return render(request, 'order_success.html', {'order': order})
 
 class BuyedProductList(LoginRequiredMixin,ListView):
+    login_url = 'signin'
     model = ProductOrder
     template_name = 'buy_product_list.html'
     context_object_name = 'buyproduct'
 
     def get_queryset(self):
         return ProductOrder.objects.filter(user=self.request.user).order_by('-created_at')
+    
+
+class ListStations(LoginRequiredMixin, ListView):
+    model = ChargingStations
+    template_name = 'list_stations.html'
+    context_object_name = 'stations'
+    login_url = 'signin'
+
+class StationSlotsView(DetailView):
+    model = ChargingStations
+    template_name = 'station_slots.html'
+    context_object_name = 'station'
+
+def release_expired_slot(slot):
+    booking = SlotBooking.objects.filter(slot=slot).first()
+    if booking:
+        if timezone.now() > booking.booked_at + timedelta(hours=1):
+            slot.is_booked = False
+            slot.save()
+            booking.delete()
+
+@login_required
+def book_slot(request, slot_id):
+    slot = get_object_or_404(ChargingSlot, id=slot_id)
+
+    release_expired_slot(slot)
+
+    if slot.is_booked:
+        messages.error(request, "Slot already booked!")
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    slot.is_booked = True
+    slot.save()
+
+    SlotBooking.objects.create(
+        user=request.user,
+        slot=slot,
+        payment_status=False
+    )
+
+    messages.success(request, "Slot booked! Proceed to payment.")
+    return redirect('payment', slot.id)
+
+@login_required
+def cancel_slot(request, slot_id):
+    slot = get_object_or_404(ChargingSlot, id=slot_id)
+
+    booking = get_object_or_404(
+        SlotBooking,
+        slot=slot,
+        user=request.user
+    )
+
+    slot.is_booked = False
+    slot.save()
+    booking.delete()
+
+    return redirect('station_slots', pk=slot.station.id)
+
+@login_required
+def payment(request, slot_id):
+    booking = get_object_or_404(SlotBooking, slot_id=slot_id, user=request.user)
+
+    if request.method == "POST":
+        booking.payment_status = True
+        booking.save()
+        messages.success(request, "Payment successful!")
+        return redirect('u_station_li')
+
+    return render(request, 'slot_payment.html', {'booking': booking})

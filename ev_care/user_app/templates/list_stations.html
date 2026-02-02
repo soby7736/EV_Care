@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}EV Charging Stations{% endblock %}
+
+{% block extra_css %}
+<style>
+    .station-card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: 0.3s;
+    }
+
+    .station-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .station-img {
+        height: 220px;
+        object-fit: cover;
+    }
+
+    .badge-connector {
+        background: #0d6efd;
+    }
+
+    .map-btn {
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4 text-center">🚗 Available Charging Stations</h2>
+
+{% if stations %}
+<div class="row g-4">
+
+    {% for station in stations %}
+    <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="card station-card h-100">
+
+            {% if station.image %}
+            <img src="{{ station.image.url }}" class="card-img-top station-img" alt="{{ station.name }}">
+            {% else %}
+            <img src="{% static 'images/default_station.jpg' %}" class="card-img-top station-img" alt="Station">
+            {% endif %}
+
+            <div class="card-body">
+
+                <h5 class="card-title">{{ station.name }}</h5>
+
+                <p class="card-text text-muted small">
+                    📍 {{ station.address|truncatechars:80 }}
+                </p>
+
+                <div class="mb-2">
+                    {% if station.connectors %}
+                    <span class="badge badge-connector">
+                        🔌 {{ station.get_connectors_display }}
+                    </span>
+                    {% else %}
+                    <span class="text-muted">No connector info</span>
+                    {% endif %}
+                </div>
+
+
+                <ul class="list-group list-group-flush mb-2">
+                    <li class="list-group-item small">
+                        ⏰ <strong>Hours:</strong> {{ station.working_hours }}
+                    </li>
+                    <li class="list-group-item small">
+                        💰 <strong>Rate:</strong> ₹{{ station.rate_per_slot }} / slot
+                    </li>
+                    <li class="list-group-item small">
+                        ⚡ <strong>Capacity:</strong> {{ station.capacity }}
+                    </li>
+                </ul>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <a href="{{ station.location }}" target="_blank" class="btn btn-sm btn-outline-primary map-btn">
+                        📍 Open Map
+                    </a>
+
+                    <a href="{% url 'station_slots' station.id %}" class="btn btn-sm btn-success">
+                        View Slots
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% else %}
+<div class="alert alert-warning text-center">
+    ❌ No charging stations available.
+</div>
+{% endif %}
+
+{% endblock %}

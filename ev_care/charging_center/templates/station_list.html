@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <table>
+        <th>Charging Center</th>
+        <th>image</th>
+        <th>Address</th>
+        <th>Working Hour</th>
+        <th>Connecting Type</th>
+        <th>Total Slot</th>
+        <th>Action</th>
+        {% for station in stations %}
+        <tr>
+            <td>{{station.name}}</td>
+            <td>
+                {% if station.image %}
+                <img src="{{ station.image.url }}" width="100">
+                {% else %}
+                No image
+                {% endif %}
+            </td>
+            <td>{{station.address}}</td>
+            <td>{{station.working_hours}}</td>
+            <td>{{station.connectors}}</td>
+            <td>{{station.capacity}}</td>
+            <td><a href="{% url 'slot-create' station.id %}" class="btn btn-primary">Create slot</a></td>
+
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Slot</title>
+</head>
+<body>
+
+<h2>Delete Slot</h2>
+
+<p>Are you sure you want to delete this slot?</p>
+
+<p>
+    <strong>Start Time:</strong> {{ slot.start_time|time:"h:i A" }}<br>
+    <strong>End Time:</strong> {{ slot.end_time|time:"h:i A" }}<br>
+    <strong>Status:</strong>
+    {% if slot.is_booked %}
+        Booked
+    {% else %}
+        Available
+    {% endif %}
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, Delete</button>
+    <a href="{% url 'slot-list' slot.station.id %}">Cancel</a>
+</form>
+
+</body>
+</html>

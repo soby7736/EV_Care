@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ station.name }} Slots
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-2">{{ station.name }} – Charging Slots</h2>
+<p class="text-muted">{{ station.address }}</p>
+
+<table class="table table-bordered mt-3">
+    <thead class="table-light">
+        <tr>
+            <th>Time</th>
+            <th>Status</th>
+            <th style="width: 150px;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for slot in station.slots.all %}
+        <tr>
+            <td>{{ slot.start_time }} - {{ slot.end_time }}</td>
+            <td>
+                {% if slot.is_booked %}
+                    <span class="badge bg-danger">Booked</span>
+                {% else %}
+                    <span class="badge bg-success">Available</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if not slot.is_booked %}
+                    <a href="{% url 'book_slot' slot.id %}"
+                       class="btn btn-sm btn-primary">
+                        Book
+                    </a>
+                {% else %}
+                    {% if slot.slotbooking.user == request.user %}
+                        <a href="{% url 'cancel_slot' slot.id %}"
+                           class="btn btn-sm btn-warning">
+                            Cancel
+                        </a>
+                    {% else %}
+                        <span class="text-muted">Booked</span>
+                    {% endif %}
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="text-center text-muted">
+                No slots available
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

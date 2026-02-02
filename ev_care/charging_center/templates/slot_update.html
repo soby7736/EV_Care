@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Slot</title>
+</head>
+<body>
+<h2>Update Charging Slot</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Update</button>
+</form>
+
+<a href="{% url 'slot-list' slot.station.id %}">Back to Slot List</a>
+</body>
+</html>

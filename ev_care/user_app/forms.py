@@ -21,9 +21,17 @@ class EVservicerq(forms.ModelForm):
         fields = ['category','description']
         widgets = {
             'description': forms.Textarea(attrs={'class':'form-control', 'rows':3, 'placeholder':'Enter description'}),
-            'price': forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Enter price'}),
             'category': forms.Select(attrs={'class':'form-select'}),
-            'status': forms.Select(attrs={'class':'form-select'}),
          }
+        
+
+# class SlotBookingForm(forms.ModelForm):
+#     class Meta:
+#         model = SlotBooking
+#         fields = ["start_time", "end_time"]
+#         widgets = {
+#             "start_time": forms.TimeInput(attrs={"type": "time"}),
+#             "end_time": forms.TimeInput(attrs={"type": "time"}),
+#         }
 
 

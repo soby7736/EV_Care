@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'user_app',
     'service_app',
     'widget_tweaks',
+    'charging_center',
     
 ]
 

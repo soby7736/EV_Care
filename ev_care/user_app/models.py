@@ -1,5 +1,8 @@
+from django.utils import timezone
+from django.conf import settings
 from django.db import models
 from service_app.models import *
+from charging_center.models import *
 
 from django.contrib.auth.models import AbstractUser
 
@@ -111,6 +114,12 @@ class ProductOrder(models.Model):
         self.total_amount = self.price * self.quantity
         super().save(*args, **kwargs)
 
+class SlotBooking(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    slot = models.OneToOneField(ChargingSlot, on_delete=models.CASCADE)
+    booked_at = models.DateTimeField(default=timezone.now)
+    payment_status = models.BooleanField(default=False)
+    
 
   
 

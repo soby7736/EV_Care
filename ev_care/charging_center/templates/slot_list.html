@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Charging Slots</title>
+</head>
+<body>
+
+<h2>Charging Slots</h2>
+
+{% for slot in slots %}
+    <p>
+        <strong>Station:</strong> {{ slot.station.name }}<br>
+        <strong>Start Time:</strong> {{ slot.start_time }}<br>
+        <strong>End Time:</strong> {{ slot.end_time }}<br>
+        <strong>Status:</strong>
+        {% if slot.is_booked %}
+            Booked
+        {% else %}
+            Available
+        {% endif %}
+    </p>
+
+    <!-- Update button -->
+    <a href="{% url 'slot-update' slot.station.id slot.id %}">Update</a> |
+
+    <!-- Delete button -->
+     <a href="{% url 'slot-delete' slot.station.id slot.id %}">Delete</a>
+
+    <hr>
+{% empty %}
+    <p>No slots available.</p>
+{% endfor %}
+
+</body>
+</html>
